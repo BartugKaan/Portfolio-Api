@@ -14,7 +14,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartugWeb.DomainLayer", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartugWeb.InfrastructureLayer", "src\External\BartugWeb.InfrastructureLayer\BartugWeb.InfrastructureLayer.csproj", "{A971ABC3-C0A4-42CE-AA51-0E25B561949B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartugWeb.Persistance", "src\External\BartugWeb.Persistance\BartugWeb.Persistance.csproj", "{56A736C3-A8CA-4A0E-947D-CD82554F41E2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartugWeb.PersistanceLayer", "src\External\BartugWeb.PersistanceLayer\BartugWeb.PersistanceLayer.csproj", "{B6CCEF28-291E-45BA-81D4-F0E7E2D8B246}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,7 +28,7 @@ Global
 		{4E53926A-1138-4B1F-BCC4-D33AA73DEF70} = {F9229CC8-04A2-469E-8BAA-92F2139C4E81}
 		{89ACE8F8-0071-4F5B-AA6D-A934106D1B41} = {F9229CC8-04A2-469E-8BAA-92F2139C4E81}
 		{A971ABC3-C0A4-42CE-AA51-0E25B561949B} = {A29DBF77-F93A-473C-A484-078782CBE96A}
-		{56A736C3-A8CA-4A0E-947D-CD82554F41E2} = {A29DBF77-F93A-473C-A484-078782CBE96A}
+		{B6CCEF28-291E-45BA-81D4-F0E7E2D8B246} = {A29DBF77-F93A-473C-A484-078782CBE96A}
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{F8CD39DA-254B-43C5-971D-618F9D877DC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -47,9 +47,9 @@ Global
 		{A971ABC3-C0A4-42CE-AA51-0E25B561949B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A971ABC3-C0A4-42CE-AA51-0E25B561949B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{A971ABC3-C0A4-42CE-AA51-0E25B561949B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{56A736C3-A8CA-4A0E-947D-CD82554F41E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{56A736C3-A8CA-4A0E-947D-CD82554F41E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{56A736C3-A8CA-4A0E-947D-CD82554F41E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{56A736C3-A8CA-4A0E-947D-CD82554F41E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B6CCEF28-291E-45BA-81D4-F0E7E2D8B246}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B6CCEF28-291E-45BA-81D4-F0E7E2D8B246}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B6CCEF28-291E-45BA-81D4-F0E7E2D8B246}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B6CCEF28-291E-45BA-81D4-F0E7E2D8B246}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
