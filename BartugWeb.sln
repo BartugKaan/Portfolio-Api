@@ -1,8 +1,55 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{63F5EA89-B5D7-42F4-B466-03E6EF6A871C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{F9229CC8-04A2-469E-8BAA-92F2139C4E81}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "External", "External", "{A29DBF77-F93A-473C-A484-078782CBE96A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartugWeb.WebApi", "src\BartugWeb.WebApi\BartugWeb.WebApi.csproj", "{F8CD39DA-254B-43C5-971D-618F9D877DC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartugWeb.ApplicationLayer", "src\Core\BartugWeb.ApplicationLayer\BartugWeb.ApplicationLayer.csproj", "{4E53926A-1138-4B1F-BCC4-D33AA73DEF70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartugWeb.DomainLayer", "src\Core\BartugWeb.DomainLayer\BartugWeb.DomainLayer.csproj", "{89ACE8F8-0071-4F5B-AA6D-A934106D1B41}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartugWeb.InfrastructureLayer", "src\External\BartugWeb.InfrastructureLayer\BartugWeb.InfrastructureLayer.csproj", "{A971ABC3-C0A4-42CE-AA51-0E25B561949B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BartugWeb.Persistance", "src\External\BartugWeb.Persistance\BartugWeb.Persistance.csproj", "{56A736C3-A8CA-4A0E-947D-CD82554F41E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F9229CC8-04A2-469E-8BAA-92F2139C4E81} = {63F5EA89-B5D7-42F4-B466-03E6EF6A871C}
+		{A29DBF77-F93A-473C-A484-078782CBE96A} = {63F5EA89-B5D7-42F4-B466-03E6EF6A871C}
+		{F8CD39DA-254B-43C5-971D-618F9D877DC1} = {63F5EA89-B5D7-42F4-B466-03E6EF6A871C}
+		{4E53926A-1138-4B1F-BCC4-D33AA73DEF70} = {F9229CC8-04A2-469E-8BAA-92F2139C4E81}
+		{89ACE8F8-0071-4F5B-AA6D-A934106D1B41} = {F9229CC8-04A2-469E-8BAA-92F2139C4E81}
+		{A971ABC3-C0A4-42CE-AA51-0E25B561949B} = {A29DBF77-F93A-473C-A484-078782CBE96A}
+		{56A736C3-A8CA-4A0E-947D-CD82554F41E2} = {A29DBF77-F93A-473C-A484-078782CBE96A}
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F8CD39DA-254B-43C5-971D-618F9D877DC1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8CD39DA-254B-43C5-971D-618F9D877DC1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8CD39DA-254B-43C5-971D-618F9D877DC1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8CD39DA-254B-43C5-971D-618F9D877DC1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E53926A-1138-4B1F-BCC4-D33AA73DEF70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E53926A-1138-4B1F-BCC4-D33AA73DEF70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E53926A-1138-4B1F-BCC4-D33AA73DEF70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E53926A-1138-4B1F-BCC4-D33AA73DEF70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{89ACE8F8-0071-4F5B-AA6D-A934106D1B41}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{89ACE8F8-0071-4F5B-AA6D-A934106D1B41}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{89ACE8F8-0071-4F5B-AA6D-A934106D1B41}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{89ACE8F8-0071-4F5B-AA6D-A934106D1B41}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A971ABC3-C0A4-42CE-AA51-0E25B561949B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A971ABC3-C0A4-42CE-AA51-0E25B561949B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A971ABC3-C0A4-42CE-AA51-0E25B561949B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A971ABC3-C0A4-42CE-AA51-0E25B561949B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56A736C3-A8CA-4A0E-947D-CD82554F41E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56A736C3-A8CA-4A0E-947D-CD82554F41E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56A736C3-A8CA-4A0E-947D-CD82554F41E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56A736C3-A8CA-4A0E-947D-CD82554F41E2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
