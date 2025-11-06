@@ -1,0 +1,30 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: bartugweb_postgres
+    environment:
+      POSTGRES_DB: bartugweb_db
+      POSTGRES_USER: bartugweb_user
+      POSTGRES_PASSWORD: bartugweb_password_1048
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - bartugweb_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bartugweb_user -d bartugweb_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  bartugweb_network:
+    driver: bridge

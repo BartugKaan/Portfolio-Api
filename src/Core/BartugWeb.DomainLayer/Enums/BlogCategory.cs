@@ -1,4 +1,4 @@
-namespace BartugWeb.DomainLayer;
+namespace BartugWeb.DomainLayer.Enums;
 
 public enum BlogCategory
 {

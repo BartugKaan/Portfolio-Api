@@ -1,4 +1,5 @@
 using BartugWeb.DomainLayer.Abstracts;
+using BartugWeb.DomainLayer.Enums;
 
 namespace BartugWeb.DomainLayer.Entities;
 

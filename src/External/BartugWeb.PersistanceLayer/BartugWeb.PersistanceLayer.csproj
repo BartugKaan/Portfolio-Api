@@ -7,10 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Context\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\..\Core\BartugWeb.ApplicationLayer\BartugWeb.ApplicationLayer.csproj" />
       <ProjectReference Include="..\..\Core\BartugWeb.DomainLayer\BartugWeb.DomainLayer.csproj" />
     </ItemGroup>
