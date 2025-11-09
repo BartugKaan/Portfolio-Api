@@ -1,4 +1,7 @@
+using BartugWeb.ApplicationLayer.Abstracts;
+using BartugWeb.ApplicationLayer.Abstracts.IRepositories;
 using BartugWeb.PersistanceLayer.Context;
+using BartugWeb.PersistanceLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +25,19 @@ public static class ServiceRegistration
                         errorCodesToAdd: null);
                 });
         });
+        
+        // Unit of Work Registration
+        services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
+        
+        // Repository Registrations
+        services.AddScoped<IAboutRepository, AboutRepository>();
+        services.AddScoped<IBlogItemRepository, BlogItemRepository>();
+        services.AddScoped<IBlogPostRepository, BlogPostRepository>();
+        services.AddScoped<IGetInTouchRepository, GetInTouchRepository>();
+        services.AddScoped<IHeroRepository, HeroRepository>();
+        services.AddScoped<IProjectRepository, ProjectRepository>();
+        services.AddScoped<ISocialMediaRepository, SocialMediaRepository>();
+        
         return services;
     }
 }

@@ -5,9 +5,16 @@ namespace BartugWeb.WebApi.Middlewares;
 
 public class ExceptionMiddleware : IMiddleware
 {
-    public Task InvokeAsync(HttpContext context, RequestDelegate next)
+    public async Task InvokeAsync(HttpContext context, RequestDelegate next)
     {
-        throw new NotImplementedException();
+        try
+        {
+            await next(context);
+        }
+        catch (Exception e)
+        {
+            await HandleExceptionAsync(context, e);
+        }
     }
 
     private Task HandleExceptionAsync(HttpContext context, Exception exception)
