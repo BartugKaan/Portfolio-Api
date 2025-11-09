@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BartugWeb.DomainLayer\BartugWeb.DomainLayer.csproj" />
+    </ItemGroup>
+
 </Project>
