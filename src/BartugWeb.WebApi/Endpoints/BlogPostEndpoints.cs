@@ -1,5 +1,6 @@
 ﻿using BartugWeb.ApplicationLayer.Feature.AboutFeatures.Commands.RemoveCommands;
 using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.CreateCommand;
+using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.DeleteCommand;
 using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.UpdateCommand;
 using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Queries.GetAll;
 using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Queries.GetById;
@@ -53,19 +54,19 @@ public class BlogPostEndpoints : IEndpointDefination
         [FromServices] IMediator mediator,
         CancellationToken cancellationToken)
     {
-        if(id != command.Id)
-            return Results.BadRequest(new {message="Route id and command id do not match"});
+        if (id != command.Id)
+            return Results.BadRequest(new { message = "Route id and command id do not match" });
         var result = await mediator.Send(command, cancellationToken);
-        return Results.Ok(new {message = "Blog Post updated successfully"});
+        return Results.Ok(new { message = "Blog Post updated successfully" });
     }
 
     private static async Task<IResult> DeleteBlogPost(
         [FromRoute] string id,
         [FromServices] IMediator mediator,
         CancellationToken cancellationToken)
-        {
-            var command = new RemoveAboutCommand(id);
-            var result = await mediator.Send(command, cancellationToken);
-            return Results.Ok(new {message = "Blog Post removed successfully"});
-        }
+    {
+        var command = new RemoveBlogPostCommand(id);
+        var result = await mediator.Send(command, cancellationToken);
+        return Results.Ok(new { message = "Blog Post removed successfully" });
+    }
 }
