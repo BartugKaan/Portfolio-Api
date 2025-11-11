@@ -7,7 +7,7 @@ namespace BartugWeb.PersistanceLayer.Repositories;
 
 public class Repository<T> : IRepository<T> where T : Entity
 {
-    private readonly AppDbContext _context;
+    protected readonly AppDbContext _context;
     private readonly DbSet<T> _dbSet;
 
     public Repository(AppDbContext context)

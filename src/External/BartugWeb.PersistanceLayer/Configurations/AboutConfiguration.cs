@@ -17,14 +17,7 @@ public class AboutConfiguration : IEntityTypeConfiguration<About>
         builder.Property(builder => builder.ImageUrl)
             .HasMaxLength(2000)
             .IsRequired();
-        builder.Property(builder =>builder.Stacks)
-            .HasMaxLength(500)
-            .IsRequired();
-        builder.Property(builder =>builder.Educations)
-            .HasMaxLength(500)
-            .IsRequired();
-        builder.Property(builder =>builder.Experience)
-            .HasMaxLength(500)
-            .IsRequired();
+
+        // Stacks artık navigation property - relationship StackConfiguration'da tanımlandı
     }
 }

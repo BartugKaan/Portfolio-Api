@@ -37,7 +37,10 @@ public static class ServiceRegistration
         services.AddScoped<IHeroRepository, HeroRepository>();
         services.AddScoped<IProjectRepository, ProjectRepository>();
         services.AddScoped<ISocialMediaRepository, SocialMediaRepository>();
-        
+        services.AddScoped<IExperienceRepository, ExperienceRepository>();
+        services.AddScoped<IEducationRepository, EducationRepository>();
+        services.AddScoped<IStackRepository, StackRepository>();
+
         return services;
     }
 }
