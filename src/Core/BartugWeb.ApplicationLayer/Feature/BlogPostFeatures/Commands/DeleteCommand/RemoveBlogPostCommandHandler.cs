@@ -22,12 +22,12 @@ public class RemoveBlogPostCommandHandler : IRequestHandler<RemoveBlogPostComman
         var blogPost = _blogPostRepository.GetByIdAsync(request.Id, cancellationToken);
 
         if (blogPost is null)
-            throw new Exception($"Blog Post with id {request.Id} not found"); 
-        
+            throw new Exception($"Blog Post with id {request.Id} not found");
+
         _blogPostRepository.Delete(blogPost.Result);
-        _unitOfWork.SaveChangesAsync(cancellationToken);
-        
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
         return $"About with id {request.Id} has been removed successfully.";
-        
+
     }
 }

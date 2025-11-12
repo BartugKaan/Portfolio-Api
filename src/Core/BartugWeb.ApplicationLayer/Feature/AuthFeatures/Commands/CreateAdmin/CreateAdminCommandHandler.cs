@@ -1,4 +1,5 @@
 using BartugWeb.ApplicationLayer.Abstracts;
+using BartugWeb.ApplicationLayer.Abstracts.IRepositories;
 using BartugWeb.ApplicationLayer.Abstracts.IServices;
 using BartugWeb.DomainLayer.Entities;
 using MediatR;
@@ -9,16 +10,18 @@ public class CreateAdminCommandHandler : IRequestHandler<CreateAdminCommand, str
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly IAdminRepository _adminRepository;
 
-    public CreateAdminCommandHandler(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher)
+    public CreateAdminCommandHandler(IUnitOfWork unitOfWork, IPasswordHasher passwordHasher, IAdminRepository adminRepository)
     {
         _unitOfWork = unitOfWork;
         _passwordHasher = passwordHasher;
+        _adminRepository = adminRepository;
     }
 
     public async Task<string> Handle(CreateAdminCommand request, CancellationToken cancellationToken)
     {
-        var existingAdmin = await _unitOfWork.AdminRepository.GetByUsernameAsync(request.Username, cancellationToken);
+        var existingAdmin = await _adminRepository.GetByUsernameAsync(request.Username, cancellationToken);
         if (existingAdmin is not null)
         {
             throw new InvalidOperationException($"Admin with username '{request.Username}' already exists.");
@@ -26,7 +29,7 @@ public class CreateAdminCommandHandler : IRequestHandler<CreateAdminCommand, str
 
         var admin = new Admin
         {
-            Id = Guid.NewGuid(),
+            Id = Guid.NewGuid().ToString(),
             Username = request.Username,
             PasswordHash = _passwordHasher.Hash(request.Password),
             Email = "admin@bartugweb.com", // Placeholder email
@@ -34,7 +37,7 @@ public class CreateAdminCommandHandler : IRequestHandler<CreateAdminCommand, str
             LastLoginAt = null
         };
 
-        await _unitOfWork.AdminRepository.AddAsync(admin, cancellationToken);
+        await _adminRepository.AddAsync(admin, cancellationToken);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return $"Admin user '{admin.Username}' created successfully.";
