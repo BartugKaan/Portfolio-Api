@@ -1,0 +1,12 @@
+using System;
+using BartugWeb.DomainLayer.Abstracts;
+
+namespace BartugWeb.DomainLayer.Entities;
+
+public class Admin : Entity
+{
+  public string Username { get; set; } = string.Empty;
+  public string PasswordHash { get; set; } = string.Empty;
+  public string Email { get; set; } = string.Empty;
+  public DateTime? LastLoginAt { get; set; }
+}

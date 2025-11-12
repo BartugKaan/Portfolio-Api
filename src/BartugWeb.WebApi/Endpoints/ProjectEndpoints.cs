@@ -33,20 +33,23 @@ public class ProjectEndpoints : IEndpointDefination
             .WithName("CreateProject")
             .WithSummary("Create a new project")
             .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest);
+            .Produces(StatusCodes.Status400BadRequest)
+            .RequireAuthorization();
 
         projectGroup.MapPut("/{id}", UpdateProject)
             .WithName("UpdateProject")
             .WithSummary("Update an existing project")
             .Produces<string>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
 
         projectGroup.MapDelete("/{id}", DeleteProject)
             .WithName("DeleteProject")
             .WithSummary("Delete project by id")
             .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
     }
 
     private static async Task<IResult> GetAllProjects(

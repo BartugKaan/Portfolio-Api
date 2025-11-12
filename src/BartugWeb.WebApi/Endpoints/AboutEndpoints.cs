@@ -26,7 +26,7 @@ public class AboutEndpoints : IEndpointDefination
             .WithSummary("Get all about entries")
             .Produces<IEnumerable<About>>(StatusCodes.Status200OK);
         
-        aboutGroup.MapPost("/{id}", GetAboutById)
+        aboutGroup.MapGet("/{id}", GetAboutById)
             .WithName("GetAboutById")
             .WithSummary("Get about entry by id")
             .Produces<About>(StatusCodes.Status200OK)
@@ -36,20 +36,23 @@ public class AboutEndpoints : IEndpointDefination
             .WithName("CreateAbout")
             .WithSummary("Create a new about entry")
             .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest);
+            .Produces(StatusCodes.Status400BadRequest)
+            .RequireAuthorization();
         
         aboutGroup.MapPut("/{id}", UpdateAbout)
             .WithName("UpdateAbout")
             .WithSummary("Update an existing about entry")
             .Produces<string>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
         
         aboutGroup.MapDelete("/{id}", DeleteAbout)
             .WithName("DeleteAbout")
             .WithSummary("Delete about by ID")
             .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
     }
 
     private static async Task<IResult> GetAllAbouts(

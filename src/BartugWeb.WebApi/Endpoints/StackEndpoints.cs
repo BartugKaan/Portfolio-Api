@@ -42,20 +42,23 @@ public class StackEndpoints : IEndpointDefination
             .WithName("CreateStack")
             .WithSummary("Create a new stack entry")
             .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest);
+            .Produces(StatusCodes.Status400BadRequest)
+            .RequireAuthorization();
 
         stackGroup.MapPut("/{id}", UpdateStack)
             .WithName("UpdateStack")
             .WithSummary("Update an existing stack entry")
             .Produces<string>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
 
         stackGroup.MapDelete("/{id}", DeleteStack)
             .WithName("DeleteStack")
             .WithSummary("Delete stack by ID")
             .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
     }
 
     private static async Task<IResult> GetStacksByAboutId(

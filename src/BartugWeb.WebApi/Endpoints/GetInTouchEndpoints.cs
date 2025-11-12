@@ -21,13 +21,15 @@ public class GetInTouchEndpoints : IEndpointDefination
         getInTouchGroup.MapGet("/", GetAllGetInTouch)
             .WithName("GetAllGetInTouch")
             .WithSummary("Get all get-in-touch entries")
-            .Produces<IEnumerable<GetInTouch>>(StatusCodes.Status200OK);
+            .Produces<IEnumerable<GetInTouch>>(StatusCodes.Status200OK)
+            .RequireAuthorization();
 
         getInTouchGroup.MapGet("/{id}", GetGetInTouchById)
             .WithName("GetGetInTouchById")
             .WithSummary("Get get-in-touch entry by id")
             .Produces<GetInTouch>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
 
         getInTouchGroup.MapPost("/", CreateGetInTouch)
             .WithName("CreateGetInTouch")
@@ -40,13 +42,15 @@ public class GetInTouchEndpoints : IEndpointDefination
             .WithSummary("Update an existing get-in-touch entry")
             .Produces<string>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
 
         getInTouchGroup.MapDelete("/{id}", DeleteGetInTouch)
             .WithName("DeleteGetInTouch")
             .WithSummary("Delete get-in-touch entry by id")
             .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
     }
 
     private static async Task<IResult> GetAllGetInTouch(

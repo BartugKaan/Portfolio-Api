@@ -33,20 +33,23 @@ public class HeroEndpoints : IEndpointDefination
             .WithName("CreateHero")
             .WithSummary("Create a new hero entry")
             .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest);
+            .Produces(StatusCodes.Status400BadRequest)
+            .RequireAuthorization();
 
         heroGroup.MapPut("/{id}", UpdateHero)
             .WithName("UpdateHero")
             .WithSummary("Update an existing hero entry")
             .Produces<string>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
 
         heroGroup.MapDelete("/{id}", DeleteHero)
             .WithName("DeleteHero")
             .WithSummary("Delete hero by id")
             .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
     }
 
     private static async Task<IResult> GetAllHeroes(

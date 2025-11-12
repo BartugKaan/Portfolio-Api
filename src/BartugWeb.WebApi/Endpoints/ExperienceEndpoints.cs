@@ -36,20 +36,23 @@ public class ExperienceEndpoints : IEndpointDefination
             .WithName("CreateExperience")
             .WithSummary("Create a new experience")
             .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest);
+            .Produces(StatusCodes.Status400BadRequest)
+            .RequireAuthorization();
 
         experienceGroup.MapPut("/{id}", UpdateExperience)
             .WithName("UpdateExperience")
             .WithSummary("Update an existing experience")
             .Produces<string>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
 
         experienceGroup.MapDelete("/{id}", DeleteExperience)
             .WithName("DeleteExperience")
             .WithSummary("Delete experience by ID")
             .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
     }
 
     private static async Task<IResult> GetExperiencesByAboutId(

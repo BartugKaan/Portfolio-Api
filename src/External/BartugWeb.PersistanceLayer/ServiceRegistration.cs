@@ -25,10 +25,10 @@ public static class ServiceRegistration
                         errorCodesToAdd: null);
                 });
         });
-        
+
         // Unit of Work Registration
         services.AddScoped<IUnitOfWork, UnitOfWork.UnitOfWork>();
-        
+
         // Repository Registrations
         services.AddScoped<IAboutRepository, AboutRepository>();
         services.AddScoped<IBlogItemRepository, BlogItemRepository>();
@@ -40,6 +40,7 @@ public static class ServiceRegistration
         services.AddScoped<IExperienceRepository, ExperienceRepository>();
         services.AddScoped<IEducationRepository, EducationRepository>();
         services.AddScoped<IStackRepository, StackRepository>();
+        services.AddScoped<IAdminRepository, AdminRepository>();
 
         return services;
     }

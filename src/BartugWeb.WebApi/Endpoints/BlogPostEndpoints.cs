@@ -1,5 +1,4 @@
-﻿using BartugWeb.ApplicationLayer.Feature.AboutFeatures.Commands.RemoveCommands;
-using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.CreateCommand;
+﻿using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.CreateCommand;
 using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.DeleteCommand;
 using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.UpdateCommand;
 using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Queries.GetAll;
@@ -17,6 +16,12 @@ public class BlogPostEndpoints : IEndpointDefination
         var blogPostGroup = app.MapGroup("/api/blog-posts")
             .WithTags("BlogPosts")
             .WithOpenApi();
+
+        blogPostGroup.MapGet("/", GetAllBlogPosts);
+        blogPostGroup.MapGet("/{id}", GetBlogPostById);
+        blogPostGroup.MapPost("/", CreateBlogPost).RequireAuthorization();
+        blogPostGroup.MapPut("/{id}", UpdateBlogPost).RequireAuthorization();
+        blogPostGroup.MapDelete("/{id}", DeleteBlogPost).RequireAuthorization();
     }
 
     private static async Task<IResult> GetAllBlogPosts(

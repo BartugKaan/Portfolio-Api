@@ -33,20 +33,23 @@ public class BlogItemEndpoints : IEndpointDefination
             .WithName("CreateBlogItem")
             .WithSummary("Create a new blog item")
             .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest);
+            .Produces(StatusCodes.Status400BadRequest)
+            .RequireAuthorization();
 
         blogItemGroup.MapPut("/{id}", UpdateBlogItem)
             .WithName("UpdateBlogItem")
             .WithSummary("Update an existing blog item")
             .Produces<string>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
 
         blogItemGroup.MapDelete("/{id}", DeleteBlogItem)
             .WithName("DeleteBlogItem")
             .WithSummary("Delete blog item by id")
             .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
     }
 
     private static async Task<IResult> GetAllBlogItems(

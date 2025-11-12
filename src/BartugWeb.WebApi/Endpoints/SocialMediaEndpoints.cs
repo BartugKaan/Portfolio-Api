@@ -33,20 +33,23 @@ public class SocialMediaEndpoints : IEndpointDefination
             .WithName("CreateSocialMedia")
             .WithSummary("Create a new social media link")
             .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest);
+            .Produces(StatusCodes.Status400BadRequest)
+            .RequireAuthorization();
 
         socialMediaGroup.MapPut("/{id}", UpdateSocialMedia)
             .WithName("UpdateSocialMedia")
             .WithSummary("Update an existing social media link")
             .Produces<string>(StatusCodes.Status200OK)
             .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
 
         socialMediaGroup.MapDelete("/{id}", DeleteSocialMedia)
             .WithName("DeleteSocialMedia")
             .WithSummary("Delete social media link by id")
             .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .Produces(StatusCodes.Status404NotFound)
+            .RequireAuthorization();
     }
 
     private static async Task<IResult> GetAllSocialMedia(
