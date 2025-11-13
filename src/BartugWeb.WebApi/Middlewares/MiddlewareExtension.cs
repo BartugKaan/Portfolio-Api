@@ -2,7 +2,7 @@
 
 using System.Text.Json;
 using FluentValidation;
-using Microsoft.AspNetCore.Mvc; // ProblemDetails için gerekli
+using Microsoft.AspNetCore.Mvc;
 
 namespace BartugWeb.WebApi.Middlewares;
 
