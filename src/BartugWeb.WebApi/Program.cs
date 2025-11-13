@@ -10,6 +10,11 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
+if (builder.Environment.IsDevelopment())
+{
+    builder.Configuration.AddUserSecrets<Program>();
+}
+
 builder.Services.AddPersistanceLayer(builder.Configuration);
 builder.Services.AddApplicationLayer();
 builder.Services.AddInfrastructureLayerServices();
