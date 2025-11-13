@@ -1,5 +1,8 @@
-using BartugWeb.WebApi.Middlewares.Utils;
+// src/BartugWeb.WebApi/Middlewares/MiddlewareExtension.cs
+
+using System.Text.Json;
 using FluentValidation;
+using Microsoft.AspNetCore.Mvc; // ProblemDetails için gerekli
 
 namespace BartugWeb.WebApi.Middlewares;
 
@@ -17,24 +20,54 @@ public class ExceptionMiddleware : IMiddleware
         }
     }
 
-    private Task HandleExceptionAsync(HttpContext context, Exception exception)
+    private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
-        context.Response.ContentType = "application/json";
-        context.Response.StatusCode = 500;
+        var statusCode = GetStatusCode(exception);
+        context.Response.ContentType = "application/problem+json";
+        context.Response.StatusCode = statusCode;
 
-        if (exception.GetType() == typeof(ValidationException))
+        var problemDetails = new ProblemDetails
         {
-            return context.Response.WriteAsync(new ValidationErrorDetails
-            {
-                Errors = ((ValidationException)exception).Errors.Select(e => e.PropertyName),
-                StatusCode = 403
-            }.ToString());
+            Status = statusCode,
+            Title = GetTitle(exception),
+            Detail = exception.Message,
+            Extensions = GetErrors(exception)
+        };
+
+        var json = JsonSerializer.Serialize(problemDetails);
+        await context.Response.WriteAsync(json);
+    }
+
+    private static int GetStatusCode(Exception exception) =>
+        exception switch
+        {
+            ValidationException => StatusCodes.Status400BadRequest,
+            InvalidOperationException => StatusCodes.Status400BadRequest,
+            UnauthorizedAccessException => StatusCodes.Status401Unauthorized,
+            _ => StatusCodes.Status500InternalServerError
+        };
+
+    private static string GetTitle(Exception exception) =>
+        exception switch
+        {
+            ValidationException => "Validation Error",
+            InvalidOperationException => "Invalid Operation",
+            UnauthorizedAccessException => "Unauthorized",
+            _ => "Server Error"
+        };
+
+    private static IDictionary<string, object?>? GetErrors(Exception exception)
+    {
+        if (exception is ValidationException validationException)
+        {
+            return validationException.Errors
+                .GroupBy(e => e.PropertyName)
+                .ToDictionary(
+                    g => g.Key,
+                    g => (object?)g.Select(e => e.ErrorMessage).ToArray()
+                );
         }
 
-        return context.Response.WriteAsync(new ErrorResult
-        {
-            Message = exception.Message,
-            StatusCode = context.Response.StatusCode
-        }.ToString());
+        return null;
     }
 }

@@ -1,3 +1,5 @@
+// src/BartugWeb.WebApi/Endpoints/AuthEndpoints.cs
+
 using BartugWeb.ApplicationLayer.Feature.AuthFeatures.Commands;
 using BartugWeb.ApplicationLayer.Feature.AuthFeatures.Commands.CreateAdmin;
 using BartugWeb.ApplicationLayer.Feature.AuthFeatures.DTOs;
@@ -19,7 +21,8 @@ public class AuthEndpoints : IEndpointDefination
             .WithName("AdminLogin")
             .WithSummary("Admin Login endpoint.")
             .Produces<LoginResponse>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status401Unauthorized);
+            .Produces(StatusCodes.Status401Unauthorized)
+            .Produces(StatusCodes.Status400BadRequest); // Hata middleware'i yakalayacağı için eklendi
 
         auth.MapPost("/register-admin", RegisterAdmin)
             .WithName("RegisterFirstAdmin")
@@ -34,16 +37,9 @@ public class AuthEndpoints : IEndpointDefination
         CancellationToken cancellationToken
     )
     {
-        try
-        {
-            var command = new LoginCommand(request.Username, request.Password);
-            var response = await mediator.Send(command, cancellationToken);
-            return Results.Ok(response);
-        }
-        catch (UnauthorizedAccessException)
-        {
-            return Results.Unauthorized();
-        }
+        var command = new LoginCommand(request.Username, request.Password);
+        var response = await mediator.Send(command, cancellationToken);
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> RegisterAdmin(
@@ -51,14 +47,7 @@ public class AuthEndpoints : IEndpointDefination
         [FromServices] IMediator mediator,
         CancellationToken cancellationToken)
     {
-        try
-        {
-            var result = await mediator.Send(command, cancellationToken);
-            return Results.Created("/api/auth/login", result);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return Results.BadRequest(new { message = ex.Message });
-        }
+        var result = await mediator.Send(command, cancellationToken);
+        return Results.Created("/api/auth/login", result);
     }
 }

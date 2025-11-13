@@ -2,6 +2,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using BartugWeb.ApplicationLayer.Abstracts.IServices;
+using BartugWeb.ApplicationLayer.Constants;
 using BartugWeb.ApplicationLayer.Options; 
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -31,7 +32,7 @@ public class JwtService : IJwtService
             new Claim(JwtRegisteredClaimNames.UniqueName, username),
             new Claim(JwtRegisteredClaimNames.Email, email),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Role, "Admin")
+            new Claim(ClaimTypes.Role, Roles.Admin)
         };
 
         var token = new JwtSecurityToken(
