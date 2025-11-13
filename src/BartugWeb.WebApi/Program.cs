@@ -4,6 +4,7 @@ using BartugWeb.InfrastructureLayer;
 using BartugWeb.PersistanceLayer;
 using BartugWeb.WebApi.Extensions;
 using BartugWeb.WebApi.Middlewares;
+using BartugWeb.ApplicationLayer.Options;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -12,6 +13,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddPersistanceLayer(builder.Configuration);
 builder.Services.AddApplicationLayer();
 builder.Services.AddInfrastructureLayerServices();
+builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection(JwtSettings.SectionName));
 
 builder.Services.AddTransient<ExceptionMiddleware>();
 
