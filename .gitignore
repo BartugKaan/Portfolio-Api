@@ -1,8 +1,31 @@
-bin/
-obj/
-/packages/
-riderModule.iml
-/_ReSharper.Caches/
-clean_arch_backend_prd (1).md
+# Visual Studio / Rider
 .idea/
+.vs/
+*.user
+*.suo
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# Rider
+/_ReSharper.Caches/
+
+# User-specific files
+*.DotSettings.user
+
+# Files that might contain secrets
+appsettings.*.json
+secrets.json
+*.secrets.json
+
+# Exclude appsettings.json from being ignored (it's safe to commit)
+!appsettings.json
+
+# Packages
+/packages/
+
+# Others
+riderModule.iml
+clean_arch_backend_prd (1).md
 support/
