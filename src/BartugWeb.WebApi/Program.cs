@@ -113,6 +113,7 @@ app.UseMiddlewareExtensions();
 
 app.UseAuthentication();
 app.UseAuthorization();
+app.UseAntiforgery();
 
 app.MapEndpointDefinitions();
 
