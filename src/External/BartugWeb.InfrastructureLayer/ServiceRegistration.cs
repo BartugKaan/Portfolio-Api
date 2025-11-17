@@ -12,6 +12,7 @@ public static class ServiceRegistration
     // JWT Services
     services.AddScoped<IJwtService, JwtService>();
     services.AddScoped<IPasswordHasher, PasswordHasher>();
+    services.AddScoped<IFileStorageService, FileStorageService>();
 
     return services;
   }
