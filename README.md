@@ -9,7 +9,7 @@ A robust and scalable backend API for a personal portfolio and blog platform, bu
 
 ## 🌟 Introduction
 
-BartugWeb API provides a complete backend solution for managing portfolio content, blog posts, and user interactions. It's designed with a focus on separation of concerns, scalability, and modern .NET practices, making it a strong foundation for any personal or professional web presence.
+Portfolio Web API provides a complete backend solution for managing portfolio content, blog posts, and user interactions. It's designed with a focus on separation of concerns, scalability, and modern .NET practices, making it a strong foundation for any personal or professional web presence.
 
 ## ✨ Key Features
 
