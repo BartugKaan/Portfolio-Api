@@ -6,8 +6,8 @@ public class CreateSocialMediaCommandValidator : AbstractValidator<CreateSocialM
 {
     public CreateSocialMediaCommandValidator()
     {
-        RuleFor(x => x.IconUrl)
-            .NotEmpty().WithMessage("Icon url is required.");
+        RuleFor(x => x.Icon)
+            .NotEmpty().WithMessage("Icon is required.");
         RuleFor(x => x.LinkUrl)
             .NotEmpty().WithMessage("Link url is required.");
     }

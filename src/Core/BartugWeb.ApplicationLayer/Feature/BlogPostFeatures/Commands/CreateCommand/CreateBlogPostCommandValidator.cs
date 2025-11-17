@@ -13,8 +13,8 @@ public class CreateBlogPostCommandValidator : AbstractValidator<CreateBlogPostCo
         RuleFor(x => x.BlogContent)
             .NotEmpty().WithMessage("Blog content cannot be empty")
             .MinimumLength(100).WithMessage("Blog content must be at least 100 characters long");
-        RuleFor(x => x.HeaderImageUrl)
-            .NotEmpty().WithMessage("Header image url cannot be empty");
+        RuleFor(x => x.HeaderImage)
+            .NotEmpty().WithMessage("Header image cannot be empty");
         RuleFor(x => x.Keywords)
             .NotEmpty().WithMessage("Keywords cannot be empty");    
     }

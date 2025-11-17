@@ -29,19 +29,31 @@ public class UpdateAboutCommandHandler : IRequestHandler<UpdateAboutCommand, str
         if (about is null)
             throw new Exception($"About with id {request.AboutId} not found");
 
-        var oldImageUrl = about.ImageUrl;
-        if (request.ImageUrl != oldImageUrl && !string.IsNullOrEmpty(oldImageUrl))
+        string? newImageUrl = null;
+        if (request.Image is not null && request.Image.Length > 0)
         {
-            var oldFileName = oldImageUrl.Split('/').Last();
-            await _fileStorageService.DeleteFileAsync(oldFileName);
+            var uniqueFileName = $"{Guid.NewGuid()}_{request.Image.FileName}";
+            await using var stream = request.Image.OpenReadStream();
+            newImageUrl = await _fileStorageService.UploadFileAsync(stream, uniqueFileName, request.Image.ContentType);
+
+            if (!string.IsNullOrEmpty(about.ImageUrl))
+            {
+                var oldFileName = about.ImageUrl.Split('/').Last();
+                await _fileStorageService.DeleteFileAsync(oldFileName);
+            }
         }
 
-        _mapper.Map(request, about);
-        _aboutRepository.Update(about);
+        var updatedAbout = _mapper.Map(request, about);
+
+        if (newImageUrl is not null)
+        {
+            updatedAbout.ImageUrl = newImageUrl;
+        }
+        
+        _aboutRepository.Update(updatedAbout);
         
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         
         return $"About with id {request.AboutId} has been updated successfully.";
-        
     }
 }

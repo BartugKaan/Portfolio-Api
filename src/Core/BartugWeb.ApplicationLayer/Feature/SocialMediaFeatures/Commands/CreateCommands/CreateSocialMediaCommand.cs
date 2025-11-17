@@ -1,7 +1,8 @@
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace BartugWeb.ApplicationLayer.Feature.SocialMediaFeatures.Commands.CreateCommands;
 
 public record CreateSocialMediaCommand(
-    string IconUrl,
+    IFormFile Icon,
     string LinkUrl) : IRequest<string>;

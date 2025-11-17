@@ -1,9 +1,10 @@
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace BartugWeb.ApplicationLayer.Feature.HeroFeatures.Commands.CreateCommands;
 
 public record CreateHeroCommand(
-    string HeroImageUrl,
+    IFormFile HeroImage,
     string Title,
     string Name,
     string JobTitles,

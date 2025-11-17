@@ -8,8 +8,6 @@ public class UpdateSocialMediaCommandValidator : AbstractValidator<UpdateSocialM
     {
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("Id is required.");
-        RuleFor(x => x.IconUrl)
-            .NotEmpty().WithMessage("Icon url is required.");
         RuleFor(x => x.LinkUrl)
             .NotEmpty().WithMessage("Link url is required.");
     }

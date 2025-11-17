@@ -5,6 +5,9 @@ using BartugWeb.PersistanceLayer;
 using BartugWeb.WebApi.Extensions;
 using BartugWeb.WebApi.Middlewares;
 using BartugWeb.ApplicationLayer.Options;
+using BartugWeb.PersistanceLayer.Data;
+using BartugWeb.PersistanceLayer.Context;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -73,6 +76,29 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddAuthorization();
 
 var app = builder.Build();
+try
+{
+    // Bu scope'u bloğun en başına taşıyoruz
+    using var scope = app.Services.CreateScope();
+    var services = scope.ServiceProvider;
+
+    // Veritabanı context'ini al
+    var dbContext = services.GetRequiredService<AppDbContext>();
+
+    // Bekleyen migration'ları uygula
+    if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
+    {
+        await dbContext.Database.MigrateAsync();
+    }
+    
+    // Veritabanı tohumlamasını çağır
+    await DataSeeder.SeedAdminUserAsync(app);
+}
+catch (Exception ex)
+{
+    var logger = app.Services.GetRequiredService<ILogger<Program>>();
+    logger.LogError(ex, "An error occurred during database migration or seeding.");
+}
 
 if (app.Environment.IsDevelopment())
 {

@@ -1,10 +1,8 @@
-using BartugWeb.ApplicationLayer.Abstracts.IServices;
 using BartugWeb.ApplicationLayer.Feature.HeroFeatures.Commands.CreateCommands;
 using BartugWeb.ApplicationLayer.Feature.HeroFeatures.Commands.RemoveCommands;
 using BartugWeb.ApplicationLayer.Feature.HeroFeatures.Commands.UpdateCommands;
 using BartugWeb.ApplicationLayer.Feature.HeroFeatures.Queries.GetAll;
 using BartugWeb.ApplicationLayer.Feature.HeroFeatures.Queries.GetById;
-using BartugWeb.DomainLayer.Entities;
 using BartugWeb.WebApi.Endpoints.Abstracts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -19,38 +17,11 @@ public class HeroEndpoints : IEndpointDefination
             .WithTags("Hero")
             .WithOpenApi();
 
-        heroGroup.MapGet("/", GetAllHeroes)
-            .WithName("GetAllHeroes")
-            .WithSummary("Get all hero entries")
-            .Produces<IEnumerable<Hero>>(StatusCodes.Status200OK);
-
-        heroGroup.MapGet("/{id}", GetHeroById)
-            .WithName("GetHeroById")
-            .WithSummary("Get hero entry by id")
-            .Produces<Hero>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
-
-        heroGroup.MapPost("/", CreateHero)
-            .WithName("CreateHero")
-            .WithSummary("Create a new hero entry")
-            .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest)
-            .RequireAuthorization();
-
-        heroGroup.MapPut("/{id}", UpdateHero)
-            .WithName("UpdateHero")
-            .WithSummary("Update an existing hero entry")
-            .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound)
-            .RequireAuthorization();
-
-        heroGroup.MapDelete("/{id}", DeleteHero)
-            .WithName("DeleteHero")
-            .WithSummary("Delete hero by id")
-            .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
-            .RequireAuthorization();
+        heroGroup.MapGet("/", GetAllHeroes);
+        heroGroup.MapGet("/{id}", GetHeroById);
+        heroGroup.MapPost("/", CreateHero).RequireAuthorization();
+        heroGroup.MapPut("/{id}", UpdateHero).RequireAuthorization();
+        heroGroup.MapDelete("/{id}", DeleteHero).RequireAuthorization();
     }
 
     private static async Task<IResult> GetAllHeroes(
@@ -75,17 +46,9 @@ public class HeroEndpoints : IEndpointDefination
 
     private static async Task<IResult> CreateHero(
         [FromForm] CreateHeroCommand command,
-        [FromForm] IFormFile file,
-        [FromServices] IFileStorageService fileStorageService,
         [FromServices] IMediator mediator,
         CancellationToken cancellationToken)
     {
-        if(file is null || file.Length == 0)
-            return Results.BadRequest("Hero Image file is required");
-        
-        await using var stream = file.OpenReadStream();
-        var fileUrl = await fileStorageService.UploadFileAsync(stream, file.Name, file.ContentType);
-        
         var result = await mediator.Send(command, cancellationToken);
         return Results.Created($"/api/hero/{result}", new { id = result, message = "Hero created successfully" });
     }
@@ -93,23 +56,13 @@ public class HeroEndpoints : IEndpointDefination
     private static async Task<IResult> UpdateHero(
         [FromRoute] string id,
         [FromForm] UpdateHeroCommand command,
-        [FromForm] IFormFile? file,
-        [FromServices] IFileStorageService fileStorageService,
         [FromServices] IMediator mediator,
         CancellationToken cancellationToken)
     {
         if (id != command.Id)
             return Results.BadRequest(new { message = "Route id and command id do not match" });
 
-        if (file is not null && file.Length > 0)
-        {
-            await using var stream = file.OpenReadStream();
-            var fileUrl = await fileStorageService.UploadFileAsync(stream, file.Name, file.ContentType);
-            command = command with { HeroImageUrl =  fileUrl };
-        }
-
-        command = command with { Id = id };
-        await mediator.Send(command, cancellationToken);
+        var result = await mediator.Send(command, cancellationToken);
         return Results.Ok(new { message = "Hero updated successfully" });
     }
 

@@ -6,8 +6,8 @@ public class CreateHeroCommandValidator : AbstractValidator<CreateHeroCommand>
 {
     public CreateHeroCommandValidator()
     {
-        RuleFor(x => x.HeroImageUrl)
-            .NotEmpty().WithMessage("Hero image url is required.");
+        RuleFor(x => x.HeroImage)
+            .NotEmpty().WithMessage("Hero image is required.");
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required.")
             .MaximumLength(150).WithMessage("Title cannot exceed 150 characters.");

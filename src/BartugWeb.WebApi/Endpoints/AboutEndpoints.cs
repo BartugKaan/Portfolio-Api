@@ -1,10 +1,8 @@
-using BartugWeb.ApplicationLayer.Abstracts.IServices; // Eklendi
 using BartugWeb.ApplicationLayer.Feature.AboutFeatures.Commands.CreateCommands;
 using BartugWeb.ApplicationLayer.Feature.AboutFeatures.Commands.RemoveCommands;
 using BartugWeb.ApplicationLayer.Feature.AboutFeatures.Commands.UpdateCommands;
 using BartugWeb.ApplicationLayer.Feature.AboutFeatures.Queries.GetAll;
 using BartugWeb.ApplicationLayer.Feature.AboutFeatures.Queries.GetById;
-using BartugWeb.DomainLayer.Entities;
 using BartugWeb.WebApi.Endpoints.Abstracts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -49,43 +47,22 @@ public class AboutEndpoints : IEndpointDefination
     }
 
     private static async Task<IResult> CreateAbout(
-        [FromForm] CreateAboutCommand command, // [FromForm] olarak değişti
-        [FromForm] IFormFile image, // Yeni parametre
+        [FromForm] CreateAboutCommand command,
         [FromServices] IMediator mediator,
-        [FromServices] IFileStorageService fileStorageService, // Eklendi
         CancellationToken cancellationToken)
     {
-        if (image is null || image.Length == 0)
-            return Results.BadRequest("About image is not provided or empty.");
-
-        var uniqueFileName = $"{Guid.NewGuid()}_{image.FileName}";
-        await using var stream = image.OpenReadStream();
-        var fileUrl = await fileStorageService.UploadFileAsync(stream, uniqueFileName, image.ContentType);
-
-        command = command with { ImageUrl = fileUrl };
-
         var result = await mediator.Send(command, cancellationToken);
         return Results.Created($"/api/about/{result}", new {id = result, message = "About created successfully"});
     }
 
     private static async Task<IResult> UpdateAbout(
         [FromRoute] string id,
-        [FromForm] UpdateAboutCommand command, // [FromForm] olarak değişti
-        [FromForm] IFormFile? image, // Yeni parametre (nullable)
+        [FromForm] UpdateAboutCommand command,
         [FromServices] IMediator mediator,
-        [FromServices] IFileStorageService fileStorageService, // Eklendi
         CancellationToken cancellationToken)
     {
         if(id != command.AboutId)
             return Results.BadRequest(new {message="Route id and command id do not match"});
-        
-        if (image is not null && image.Length > 0)
-        {
-            var uniqueFileName = $"{Guid.NewGuid()}_{image.FileName}";
-            await using var stream = image.OpenReadStream();
-            var fileUrl = await fileStorageService.UploadFileAsync(stream, uniqueFileName, image.ContentType);
-            command = command with { ImageUrl = fileUrl };
-        }
         
         var result = await mediator.Send(command, cancellationToken);
         return Results.Ok(new {message = "About updated successfully"});

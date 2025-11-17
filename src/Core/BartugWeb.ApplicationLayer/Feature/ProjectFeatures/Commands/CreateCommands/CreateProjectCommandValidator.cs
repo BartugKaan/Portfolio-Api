@@ -6,8 +6,8 @@ public class CreateProjectCommandValidator : AbstractValidator<CreateProjectComm
 {
     public CreateProjectCommandValidator()
     {
-        RuleFor(x => x.ProjectImgUrl)
-            .NotEmpty().WithMessage("Project image url is required.");
+        RuleFor(x => x.ProjectImage)
+            .NotEmpty().WithMessage("Project image is required.");
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required.")
             .MaximumLength(200).WithMessage("Title cannot exceed 200 characters.");

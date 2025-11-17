@@ -1,10 +1,11 @@
 using MediatR;
+using Microsoft.AspNetCore.Http;
 
 namespace BartugWeb.ApplicationLayer.Feature.HeroFeatures.Commands.UpdateCommands;
 
 public record UpdateHeroCommand(
     string Id,
-    string HeroImageUrl,
+    IFormFile? HeroImage,
     string Title,
     string Name,
     string JobTitles,

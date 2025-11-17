@@ -29,3 +29,7 @@ secrets.json
 riderModule.iml
 clean_arch_backend_prd (1).md
 support/
+
+# Environment files
+.env
+.env.local

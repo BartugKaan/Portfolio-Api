@@ -9,8 +9,6 @@ public class UpdateBlogItemCommandValidator : AbstractValidator<UpdateBlogItemCo
     {
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("Id is required.");
-        RuleFor(x => x.CoverImgUrl)
-            .NotEmpty().WithMessage("Cover image url is required.");
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required.")
             .MaximumLength(200).WithMessage("Title cannot exceed 200 characters.");

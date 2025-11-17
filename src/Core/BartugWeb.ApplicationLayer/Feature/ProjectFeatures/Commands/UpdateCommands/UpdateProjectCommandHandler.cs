@@ -2,6 +2,7 @@ using AutoMapper;
 using BartugWeb.ApplicationLayer.Abstracts;
 using BartugWeb.ApplicationLayer.Abstracts.IRepositories;
 using BartugWeb.ApplicationLayer.Abstracts.IServices;
+using BartugWeb.DomainLayer.Entities; // Add this if Project entity is not found
 using MediatR;
 
 namespace BartugWeb.ApplicationLayer.Feature.ProjectFeatures.Commands.UpdateCommands;
@@ -32,17 +33,32 @@ public class UpdateProjectCommandHandler : IRequestHandler<UpdateProjectCommand,
         if (project is null)
             throw new Exception($"Project with id {request.Id} not found");
 
-        var oldImageUrl = project.ProjectImgUrl;
-        
-        if (request.ProjectImgUrl != oldImageUrl && !string.IsNullOrEmpty(oldImageUrl))
+        string? newImageUrl = null;
+        if (request.ProjectImage is not null && request.ProjectImage.Length > 0)
         {
-            var oldFileName = oldImageUrl.Split('/').Last();
-            await _fileStorageService.DeleteFileAsync(oldFileName);
-        }
-        
-        _mapper.Map(request, project);
+            // Upload the new image first
+            var uniqueFileName = $"{Guid.NewGuid()}_{request.ProjectImage.FileName}";
+            await using var stream = request.ProjectImage.OpenReadStream();
+            newImageUrl = await _fileStorageService.UploadFileAsync(stream, uniqueFileName, request.ProjectImage.ContentType);
 
-        _projectRepository.Update(project);
+            // If upload is successful and there was an old image, delete the old one
+            if (!string.IsNullOrEmpty(project.ProjectImgUrl))
+            {
+                var oldFileName = project.ProjectImgUrl.Split('/').Last();
+                await _fileStorageService.DeleteFileAsync(oldFileName);
+            }
+        }
+
+        // Map the request to the entity
+        var updatedProject = _mapper.Map(request, project);
+
+        // If a new image was uploaded, make sure its URL is set on the updated entity
+        if (newImageUrl is not null)
+        {
+            updatedProject.ProjectImgUrl = newImageUrl;
+        }
+
+        _projectRepository.Update(updatedProject);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         return $"Project with id {request.Id} has been updated successfully.";

@@ -8,8 +8,6 @@ public class UpdateHeroCommandValidator : AbstractValidator<UpdateHeroCommand>
     {
         RuleFor(x => x.Id)
             .NotEmpty().WithMessage("Id is required.");
-        RuleFor(x => x.HeroImageUrl)
-            .NotEmpty().WithMessage("Hero image url is required.");
         RuleFor(x => x.Title)
             .NotEmpty().WithMessage("Title is required.")
             .MaximumLength(150).WithMessage("Title cannot exceed 150 characters.");

@@ -1,10 +1,8 @@
-using BartugWeb.ApplicationLayer.Abstracts.IServices;
 using BartugWeb.ApplicationLayer.Feature.ProjectFeatures.Commands.CreateCommands;
 using BartugWeb.ApplicationLayer.Feature.ProjectFeatures.Commands.RemoveCommands;
 using BartugWeb.ApplicationLayer.Feature.ProjectFeatures.Commands.UpdateCommands;
 using BartugWeb.ApplicationLayer.Feature.ProjectFeatures.Queries.GetAll;
 using BartugWeb.ApplicationLayer.Feature.ProjectFeatures.Queries.GetById;
-using BartugWeb.DomainLayer.Entities;
 using BartugWeb.WebApi.Endpoints.Abstracts;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -21,35 +19,25 @@ public class ProjectEndpoints : IEndpointDefination
 
         projectGroup.MapGet("/", GetAllProjects)
             .WithName("GetAllProjects")
-            .WithSummary("Get all projects")
-            .Produces<IEnumerable<Project>>(StatusCodes.Status200OK);
+            .WithSummary("Get all projects");
 
         projectGroup.MapGet("/{id}", GetProjectById)
             .WithName("GetProjectById")
-            .WithSummary("Get project by id")
-            .Produces<Project>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
+            .WithSummary("Get project by id");
 
         projectGroup.MapPost("/", CreateProject)
             .WithName("CreateProject")
             .WithSummary("Create a new project")
-            .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest)
             .RequireAuthorization();
 
         projectGroup.MapPut("/{id}", UpdateProject)
             .WithName("UpdateProject")
             .WithSummary("Update an existing project")
-            .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization();
 
         projectGroup.MapDelete("/{id}", DeleteProject)
             .WithName("DeleteProject")
             .WithSummary("Delete project by id")
-            .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
             .RequireAuthorization();
     }
 
@@ -75,19 +63,9 @@ public class ProjectEndpoints : IEndpointDefination
 
     private static async Task<IResult> CreateProject(
         [FromForm] CreateProjectCommand command,
-        [FromForm] IFormFile file,
         [FromServices] IMediator mediator,
-        [FromServices] IFileStorageService fileStorageService,
         CancellationToken cancellationToken)
     {
-        if(file is null || file.Length == 0)
-            return Results.BadRequest("Project image is not provided or Empty.");
-
-        await using var stream = file.OpenReadStream();
-        var fileUrl = await fileStorageService.UploadFileAsync(stream, file.FileName, file.ContentType);
-        
-        command = command with {ProjectImgUrl = fileUrl};
-        
         var result = await mediator.Send(command, cancellationToken);
         return Results.Created($"/api/projects/{result}", new { id = result, message = "Project created successfully" });
     }
@@ -95,23 +73,13 @@ public class ProjectEndpoints : IEndpointDefination
     private static async Task<IResult> UpdateProject(
         [FromRoute] string id,
         [FromForm] UpdateProjectCommand command,
-        [FromForm] IFormFile? file,
-        [FromServices] IFileStorageService fileStorageService,
         [FromServices] IMediator mediator,
         CancellationToken cancellationToken)
     {
         if (id != command.Id)
             return Results.BadRequest(new { message = "Route id and command id do not match" });
         
-        if(file is not null && file.Length > 0)
-        {
-            await using var stream = file.OpenReadStream();
-            var fileUrl = await fileStorageService.UploadFileAsync(stream, file.FileName, file.ContentType);
-            command = command with {ProjectImgUrl = fileUrl};
-        }
-
-        command = command with { Id = id };
-        await mediator.Send(command, cancellationToken);
+        var result = await mediator.Send(command, cancellationToken);
         return Results.Ok(new { message = "Project updated successfully" });
     }
 

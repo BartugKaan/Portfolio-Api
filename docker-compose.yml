@@ -1,6 +1,34 @@
 version: "3.8"
 
 services:
+  # API Servisimiz
+  api:
+    container_name: bartugweb_api
+    build: . # Proje kök dizinindeki Dockerfile'ı kullan
+    ports:
+      - "8000:8080" # Makinenizin 8000 portunu konteynerin 8080 portuna bağla
+    environment:
+      # User Secrets'taki değerleri buraya ortam değişkeni olarak giriyoruz.
+      # Docker içindeki bağlantı localhost değil, servis adı (postgres) olmalı!
+      - ConnectionStrings__PostgreSqlDefault=Server=postgres;Port=5432;Database=bartugweb_db;User Id=bartugweb_user;Password=bartugweb_password_1048
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      # Diğer gizli bilgileri de buraya eklemeliyiz.
+      - JwtSettings__SecretKey=${JWT_SECRET_KEY}
+      - DefaultAdmin__Username=${DEFAULT_ADMIN_USER}
+      - DefaultAdmin__Password=${DEFAULT_ADMIN_PASS}
+      - Storage__Endpoint=${STORAGE_ENDPOINT}
+      - Storage__AccessKeyId=${STORAGE_ACCESS_KEY_ID}
+      - Storage__SecretAccessKey=${STORAGE_SECRET_ACCESS_KEY}
+      - Storage__PublicBaseUrl=${STORAGE_PUBLIC_BASE_URL}
+    networks:
+      - bartugweb_network
+    depends_on:
+      postgres:
+        condition: service_healthy # Postgres servisi sağlıklı olmadan başlama
+    restart: unless-stopped
+
+  # Mevcut PostgreSQL Servisiniz
   postgres:
     image: postgres:16-alpine
     container_name: bartugweb_postgres
@@ -28,3 +56,4 @@ volumes:
 networks:
   bartugweb_network:
     driver: bridge
+    

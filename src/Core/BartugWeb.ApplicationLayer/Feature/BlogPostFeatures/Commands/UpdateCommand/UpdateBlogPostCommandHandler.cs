@@ -2,6 +2,7 @@
 using BartugWeb.ApplicationLayer.Abstracts;
 using BartugWeb.ApplicationLayer.Abstracts.IRepositories;
 using BartugWeb.ApplicationLayer.Abstracts.IServices;
+using BartugWeb.DomainLayer.Entities;
 using MediatR;
 
 namespace BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.UpdateCommand;
@@ -28,15 +29,28 @@ public class UpdateBlogPostCommandHandler : IRequestHandler<UpdateBlogPostComman
         if(blogPost is null)
             throw new Exception($"BlogPost with id {request.Id} not found");
         
-        var oldImageUrl = blogPost.HeaderImageUrl;
-        if (request.HeaderImageUrl != oldImageUrl && !string.IsNullOrEmpty(oldImageUrl))
+        string? newImageUrl = null;
+        if (request.HeaderImage is not null && request.HeaderImage.Length > 0)
         {
-            var oldFileName = oldImageUrl.Split('/').Last();
-            await _fileStorageService.DeleteFileAsync(oldFileName);
+            var uniqueFileName = $"{Guid.NewGuid()}_{request.HeaderImage.FileName}";
+            await using var stream = request.HeaderImage.OpenReadStream();
+            newImageUrl = await _fileStorageService.UploadFileAsync(stream, uniqueFileName, request.HeaderImage.ContentType);
+
+            if (!string.IsNullOrEmpty(blogPost.HeaderImageUrl))
+            {
+                var oldFileName = blogPost.HeaderImageUrl.Split('/').Last();
+                await _fileStorageService.DeleteFileAsync(oldFileName);
+            }
         }
 
-        _mapper.Map(request, blogPost);
-        _blogPostRepository.Update(blogPost);
+        var updatedBlogPost = _mapper.Map(request, blogPost);
+
+        if (newImageUrl is not null)
+        {
+            updatedBlogPost.HeaderImageUrl = newImageUrl;
+        }
+        
+        _blogPostRepository.Update(updatedBlogPost);
         
         await _unitOfWork.SaveChangesAsync(cancellationToken);
         return $"BlogPost with id {request.Id} has been updated successfully.";
