@@ -1,13 +1,12 @@
 version: "3.8"
 
 services:
-  # API Servisimiz
   api:
     container_name: bartugweb_api
     build: .
     environment:
       - ConnectionStrings__PostgreSqlDefault=Server=postgres;Port=5432;Database=bartugweb_db;User Id=bartugweb_user;Password=bartugweb_password_1048
-      - ASPNETCORE_ENVIRONMENT=Development # API loglarında Development göründüğü için şimdilik böyle bırakıyoruz
+      - ASPNETCORE_ENVIRONMENT=Development 
       - ASPNETCORE_URLS=http://+:8080
       - JwtSettings__SecretKey=${JWT_SECRET_KEY}
       - DefaultAdmin__Username=${DEFAULT_ADMIN_USER}
@@ -23,7 +22,7 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # PostgreSQL Servisimiz
+  
   postgres:
     image: postgres:16-alpine
     container_name: bartugweb_postgres
@@ -51,8 +50,8 @@ services:
       - "443:443" 
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - ~/certbot/www:/var/www/certbot # Certbot doğrulama dosyaları için (Host'tan bind mount)
-      - certbot-certs:/etc/letsencrypt # Certbot sertifikaları için
+      - ~/certbot/www:/var/www/certbot 
+      - certbot-certs:/etc/letsencrypt 
     networks:
       - bartugweb_network
     depends_on:
@@ -62,7 +61,7 @@ services:
 volumes:
   postgres_data:
     driver: local
-  certbot-certs: # Certbot sertifikaları için volume
+  certbot-certs: 
 
 networks:
   bartugweb_network:
