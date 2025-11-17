@@ -1,3 +1,4 @@
+using BartugWeb.ApplicationLayer.Abstracts.IServices;
 using BartugWeb.ApplicationLayer.Feature.HeroFeatures.Commands.CreateCommands;
 using BartugWeb.ApplicationLayer.Feature.HeroFeatures.Commands.RemoveCommands;
 using BartugWeb.ApplicationLayer.Feature.HeroFeatures.Commands.UpdateCommands;
@@ -73,23 +74,41 @@ public class HeroEndpoints : IEndpointDefination
     }
 
     private static async Task<IResult> CreateHero(
-        [FromBody] CreateHeroCommand command,
+        [FromForm] CreateHeroCommand command,
+        [FromForm] IFormFile file,
+        [FromServices] IFileStorageService fileStorageService,
         [FromServices] IMediator mediator,
         CancellationToken cancellationToken)
     {
+        if(file is null || file.Length == 0)
+            return Results.BadRequest("Hero Image file is required");
+        
+        await using var stream = file.OpenReadStream();
+        var fileUrl = await fileStorageService.UploadFileAsync(stream, file.Name, file.ContentType);
+        
         var result = await mediator.Send(command, cancellationToken);
         return Results.Created($"/api/hero/{result}", new { id = result, message = "Hero created successfully" });
     }
 
     private static async Task<IResult> UpdateHero(
         [FromRoute] string id,
-        [FromBody] UpdateHeroCommand command,
+        [FromForm] UpdateHeroCommand command,
+        [FromForm] IFormFile? file,
+        [FromServices] IFileStorageService fileStorageService,
         [FromServices] IMediator mediator,
         CancellationToken cancellationToken)
     {
         if (id != command.Id)
             return Results.BadRequest(new { message = "Route id and command id do not match" });
 
+        if (file is not null && file.Length > 0)
+        {
+            await using var stream = file.OpenReadStream();
+            var fileUrl = await fileStorageService.UploadFileAsync(stream, file.Name, file.ContentType);
+            command = command with { HeroImageUrl =  fileUrl };
+        }
+
+        command = command with { Id = id };
         await mediator.Send(command, cancellationToken);
         return Results.Ok(new { message = "Hero updated successfully" });
     }

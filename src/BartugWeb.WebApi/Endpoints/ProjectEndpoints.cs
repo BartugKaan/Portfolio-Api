@@ -1,3 +1,4 @@
+using BartugWeb.ApplicationLayer.Abstracts.IServices;
 using BartugWeb.ApplicationLayer.Feature.ProjectFeatures.Commands.CreateCommands;
 using BartugWeb.ApplicationLayer.Feature.ProjectFeatures.Commands.RemoveCommands;
 using BartugWeb.ApplicationLayer.Feature.ProjectFeatures.Commands.UpdateCommands;
@@ -73,23 +74,43 @@ public class ProjectEndpoints : IEndpointDefination
     }
 
     private static async Task<IResult> CreateProject(
-        [FromBody] CreateProjectCommand command,
+        [FromForm] CreateProjectCommand command,
+        [FromForm] IFormFile file,
         [FromServices] IMediator mediator,
+        [FromServices] IFileStorageService fileStorageService,
         CancellationToken cancellationToken)
     {
+        if(file is null || file.Length == 0)
+            return Results.BadRequest("Project image is not provided or Empty.");
+
+        await using var stream = file.OpenReadStream();
+        var fileUrl = await fileStorageService.UploadFileAsync(stream, file.FileName, file.ContentType);
+        
+        command = command with {ProjectImgUrl = fileUrl};
+        
         var result = await mediator.Send(command, cancellationToken);
         return Results.Created($"/api/projects/{result}", new { id = result, message = "Project created successfully" });
     }
 
     private static async Task<IResult> UpdateProject(
         [FromRoute] string id,
-        [FromBody] UpdateProjectCommand command,
+        [FromForm] UpdateProjectCommand command,
+        [FromForm] IFormFile? file,
+        [FromServices] IFileStorageService fileStorageService,
         [FromServices] IMediator mediator,
         CancellationToken cancellationToken)
     {
         if (id != command.Id)
             return Results.BadRequest(new { message = "Route id and command id do not match" });
+        
+        if(file is not null && file.Length > 0)
+        {
+            await using var stream = file.OpenReadStream();
+            var fileUrl = await fileStorageService.UploadFileAsync(stream, file.FileName, file.ContentType);
+            command = command with {ProjectImgUrl = fileUrl};
+        }
 
+        command = command with { Id = id };
         await mediator.Send(command, cancellationToken);
         return Results.Ok(new { message = "Project updated successfully" });
     }

@@ -1,3 +1,4 @@
+using BartugWeb.ApplicationLayer.Abstracts.IServices;
 using BartugWeb.ApplicationLayer.Feature.SocialMediaFeatures.Commands.CreateCommands;
 using BartugWeb.ApplicationLayer.Feature.SocialMediaFeatures.Commands.RemoveCommands;
 using BartugWeb.ApplicationLayer.Feature.SocialMediaFeatures.Commands.UpdateCommands;
@@ -18,38 +19,11 @@ public class SocialMediaEndpoints : IEndpointDefination
             .WithTags("SocialMedia")
             .WithOpenApi();
 
-        socialMediaGroup.MapGet("/", GetAllSocialMedia)
-            .WithName("GetAllSocialMedia")
-            .WithSummary("Get all social media links")
-            .Produces<IEnumerable<SocialMedia>>(StatusCodes.Status200OK);
-
-        socialMediaGroup.MapGet("/{id}", GetSocialMediaById)
-            .WithName("GetSocialMediaById")
-            .WithSummary("Get social media link by id")
-            .Produces<SocialMedia>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
-
-        socialMediaGroup.MapPost("/", CreateSocialMedia)
-            .WithName("CreateSocialMedia")
-            .WithSummary("Create a new social media link")
-            .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest)
-            .RequireAuthorization();
-
-        socialMediaGroup.MapPut("/{id}", UpdateSocialMedia)
-            .WithName("UpdateSocialMedia")
-            .WithSummary("Update an existing social media link")
-            .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound)
-            .RequireAuthorization();
-
-        socialMediaGroup.MapDelete("/{id}", DeleteSocialMedia)
-            .WithName("DeleteSocialMedia")
-            .WithSummary("Delete social media link by id")
-            .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
-            .RequireAuthorization();
+        socialMediaGroup.MapGet("/", GetAllSocialMedia);
+        socialMediaGroup.MapGet("/{id}", GetSocialMediaById);
+        socialMediaGroup.MapPost("/", CreateSocialMedia).RequireAuthorization();
+        socialMediaGroup.MapPut("/{id}", UpdateSocialMedia).RequireAuthorization();
+        socialMediaGroup.MapDelete("/{id}", DeleteSocialMedia).RequireAuthorization();
     }
 
     private static async Task<IResult> GetAllSocialMedia(
@@ -73,22 +47,43 @@ public class SocialMediaEndpoints : IEndpointDefination
     }
 
     private static async Task<IResult> CreateSocialMedia(
-        [FromBody] CreateSocialMediaCommand command,
+        [FromForm] CreateSocialMediaCommand command,
+        [FromForm] IFormFile icon,
         [FromServices] IMediator mediator,
+        [FromServices] IFileStorageService fileStorageService,
         CancellationToken cancellationToken)
     {
+        if (icon is null || icon.Length == 0)
+            return Results.BadRequest("Social media icon is not provided or empty.");
+
+        var uniqueFileName = $"{Guid.NewGuid()}_{icon.FileName}";
+        await using var stream = icon.OpenReadStream();
+        var fileUrl = await fileStorageService.UploadFileAsync(stream, uniqueFileName, icon.ContentType);
+
+        command = command with { IconUrl = fileUrl };
+
         var result = await mediator.Send(command, cancellationToken);
         return Results.Created($"/api/social-media/{result}", new { id = result, message = "Social media created successfully" });
     }
 
     private static async Task<IResult> UpdateSocialMedia(
         [FromRoute] string id,
-        [FromBody] UpdateSocialMediaCommand command,
+        [FromForm] UpdateSocialMediaCommand command,
+        [FromForm] IFormFile? icon,
         [FromServices] IMediator mediator,
+        [FromServices] IFileStorageService fileStorageService,
         CancellationToken cancellationToken)
     {
         if (id != command.Id)
             return Results.BadRequest(new { message = "Route id and command id do not match" });
+
+        if (icon is not null && icon.Length > 0)
+        {
+            var uniqueFileName = $"{Guid.NewGuid()}_{icon.FileName}";
+            await using var stream = icon.OpenReadStream();
+            var fileUrl = await fileStorageService.UploadFileAsync(stream, uniqueFileName, icon.ContentType);
+            command = command with { IconUrl = fileUrl };
+        }
 
         await mediator.Send(command, cancellationToken);
         return Results.Ok(new { message = "Social media updated successfully" });

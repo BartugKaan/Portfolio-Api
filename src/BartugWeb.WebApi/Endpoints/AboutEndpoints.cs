@@ -1,3 +1,4 @@
+using BartugWeb.ApplicationLayer.Abstracts.IServices; // Eklendi
 using BartugWeb.ApplicationLayer.Feature.AboutFeatures.Commands.CreateCommands;
 using BartugWeb.ApplicationLayer.Feature.AboutFeatures.Commands.RemoveCommands;
 using BartugWeb.ApplicationLayer.Feature.AboutFeatures.Commands.UpdateCommands;
@@ -10,9 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BartugWeb.WebApi.Endpoints;
 
-/// <summary>
-/// About feature endpoints
-/// </summary>
 public class AboutEndpoints : IEndpointDefination
 {
     public void DefineEndpoints(WebApplication app)
@@ -21,38 +19,11 @@ public class AboutEndpoints : IEndpointDefination
             .WithTags("About")
             .WithOpenApi();
 
-        aboutGroup.MapGet("/", GetAllAbouts)
-            .WithName("GetAllAbouts")
-            .WithSummary("Get all about entries")
-            .Produces<IEnumerable<About>>(StatusCodes.Status200OK);
-        
-        aboutGroup.MapGet("/{id}", GetAboutById)
-            .WithName("GetAboutById")
-            .WithSummary("Get about entry by id")
-            .Produces<About>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound);
-
-        aboutGroup.MapPost("/", CreateAbout)
-            .WithName("CreateAbout")
-            .WithSummary("Create a new about entry")
-            .Produces<string>(StatusCodes.Status201Created)
-            .Produces(StatusCodes.Status400BadRequest)
-            .RequireAuthorization();
-        
-        aboutGroup.MapPut("/{id}", UpdateAbout)
-            .WithName("UpdateAbout")
-            .WithSummary("Update an existing about entry")
-            .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status404NotFound)
-            .RequireAuthorization();
-        
-        aboutGroup.MapDelete("/{id}", DeleteAbout)
-            .WithName("DeleteAbout")
-            .WithSummary("Delete about by ID")
-            .Produces<string>(StatusCodes.Status200OK)
-            .Produces(StatusCodes.Status404NotFound)
-            .RequireAuthorization();
+        aboutGroup.MapGet("/", GetAllAbouts);
+        aboutGroup.MapGet("/{id}", GetAboutById);
+        aboutGroup.MapPost("/", CreateAbout).RequireAuthorization();
+        aboutGroup.MapPut("/{id}", UpdateAbout).RequireAuthorization();
+        aboutGroup.MapDelete("/{id}", DeleteAbout).RequireAuthorization();
     }
 
     private static async Task<IResult> GetAllAbouts(
@@ -78,26 +49,46 @@ public class AboutEndpoints : IEndpointDefination
     }
 
     private static async Task<IResult> CreateAbout(
-        [FromBody] CreateAboutCommand command,
+        [FromForm] CreateAboutCommand command, // [FromForm] olarak değişti
+        [FromForm] IFormFile image, // Yeni parametre
         [FromServices] IMediator mediator,
+        [FromServices] IFileStorageService fileStorageService, // Eklendi
         CancellationToken cancellationToken)
     {
+        if (image is null || image.Length == 0)
+            return Results.BadRequest("About image is not provided or empty.");
+
+        var uniqueFileName = $"{Guid.NewGuid()}_{image.FileName}";
+        await using var stream = image.OpenReadStream();
+        var fileUrl = await fileStorageService.UploadFileAsync(stream, uniqueFileName, image.ContentType);
+
+        command = command with { ImageUrl = fileUrl };
+
         var result = await mediator.Send(command, cancellationToken);
         return Results.Created($"/api/about/{result}", new {id = result, message = "About created successfully"});
     }
 
     private static async Task<IResult> UpdateAbout(
         [FromRoute] string id,
-        [FromBody] UpdateAboutCommand command,
+        [FromForm] UpdateAboutCommand command, // [FromForm] olarak değişti
+        [FromForm] IFormFile? image, // Yeni parametre (nullable)
         [FromServices] IMediator mediator,
+        [FromServices] IFileStorageService fileStorageService, // Eklendi
         CancellationToken cancellationToken)
     {
         if(id != command.AboutId)
             return Results.BadRequest(new {message="Route id and command id do not match"});
         
+        if (image is not null && image.Length > 0)
+        {
+            var uniqueFileName = $"{Guid.NewGuid()}_{image.FileName}";
+            await using var stream = image.OpenReadStream();
+            var fileUrl = await fileStorageService.UploadFileAsync(stream, uniqueFileName, image.ContentType);
+            command = command with { ImageUrl = fileUrl };
+        }
+        
         var result = await mediator.Send(command, cancellationToken);
         return Results.Ok(new {message = "About updated successfully"});
-        
     }
     
     private static async Task<IResult> DeleteAbout(
@@ -109,5 +100,4 @@ public class AboutEndpoints : IEndpointDefination
         var result = await mediator.Send(command, cancellationToken);
         return Results.Ok(new {message = result});
     }
-    
 }

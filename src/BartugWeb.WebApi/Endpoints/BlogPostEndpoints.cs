@@ -1,4 +1,5 @@
-﻿using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.CreateCommand;
+﻿using BartugWeb.ApplicationLayer.Abstracts.IServices;
+using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.CreateCommand;
 using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.DeleteCommand;
 using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Commands.UpdateCommand;
 using BartugWeb.ApplicationLayer.Feature.BlogPostFeatures.Queries.GetAll;
@@ -44,10 +45,19 @@ public class BlogPostEndpoints : IEndpointDefination
     }
 
     private static async Task<IResult> CreateBlogPost(
-        [FromBody] CreateBlogPostCommand command,
+        [FromForm] CreateBlogPostCommand command,
+        [FromForm] IFormFile file,
         [FromServices] IMediator mediator,
+        [FromServices] IFileStorageService fileStorageService,
         CancellationToken cancellationToken)
     {
+        if(file is null || file.Length == 0)
+            return Results.BadRequest("Cover image file is required.");
+        
+        await using var stream = file.OpenReadStream();
+        var fileUrl = await fileStorageService.UploadFileAsync(stream, file.FileName, file.ContentType);
+        command = command with { HeaderImageUrl = fileUrl };
+        
         var result = await mediator.Send(command, cancellationToken);
         return Results.Created($"/api/blog-posts/{result}",
             new { id = result, message = "Blog Post created successfully" });
@@ -55,12 +65,22 @@ public class BlogPostEndpoints : IEndpointDefination
 
     private static async Task<IResult> UpdateBlogPost(
         [FromRoute] string id,
-        [FromBody] UpdateBlogPostCommand command,
+        [FromForm] UpdateBlogPostCommand command,
+        [FromForm] IFormFile file,
+        [FromServices] IFileStorageService fileStorageService,
         [FromServices] IMediator mediator,
         CancellationToken cancellationToken)
     {
         if (id != command.Id)
             return Results.BadRequest(new { message = "Route id and command id do not match" });
+
+        if (file is not null && file.Length > 0)
+        {
+            await using var stream = file.OpenReadStream();
+            var fileUrl = await fileStorageService.UploadFileAsync(stream, file.FileName, file.ContentType);
+            command = command with{ HeaderImageUrl = fileUrl };
+        }
+        
         var result = await mediator.Send(command, cancellationToken);
         return Results.Ok(new { message = "Blog Post updated successfully" });
     }
