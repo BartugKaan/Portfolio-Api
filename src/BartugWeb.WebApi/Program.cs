@@ -100,10 +100,11 @@ catch (Exception ex)
     logger.LogError(ex, "An error occurred during database migration or seeding.");
 }
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
 }
 
 app.UseMiddlewareExtensions();
