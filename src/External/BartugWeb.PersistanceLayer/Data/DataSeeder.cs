@@ -38,7 +38,7 @@ public static class DataSeeder
             Id = Guid.NewGuid().ToString(),
             Username = adminUsername,
             PasswordHash = passwordHasher.Hash(adminPassword),
-            Email = "bartugkaan@mail.com"
+            Email = "bartugkaan.celebi@outlook.com"
         };
 
         await adminRepository.AddAsync(newAdmin, default);
