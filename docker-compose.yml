@@ -51,8 +51,8 @@ services:
       - "443:443" 
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-      - certbot-webroot:/var/www/certbot 
-      - certbot-certs:/etc/letsencrypt 
+      - ~/certbot/www:/var/www/certbot # Certbot doğrulama dosyaları için (Host'tan bind mount)
+      - certbot-certs:/etc/letsencrypt # Certbot sertifikaları için
     networks:
       - bartugweb_network
     depends_on:
@@ -62,8 +62,7 @@ services:
 volumes:
   postgres_data:
     driver: local
-  certbot-webroot: 
-  certbot-certs: 
+  certbot-certs: # Certbot sertifikaları için volume
 
 networks:
   bartugweb_network:
