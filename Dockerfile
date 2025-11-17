@@ -28,7 +28,7 @@ WORKDIR /app
 COPY --from=build /app/out .
 
 # Create a non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup --no-create-home appuser
 RUN chown -R appuser:appgroup /app
 USER appuser
 
