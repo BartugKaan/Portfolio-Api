@@ -78,20 +78,20 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 try
 {
-    // Bu scope'u bloğun en başına taşıyoruz
+    // Move this scope to the beginning of the block
     using var scope = app.Services.CreateScope();
     var services = scope.ServiceProvider;
 
-    // Veritabanı context'ini al
+    // Get the database context
     var dbContext = services.GetRequiredService<AppDbContext>();
 
-    // Bekleyen migration'ları uygula
+    // Apply pending migrations
     if ((await dbContext.Database.GetPendingMigrationsAsync()).Any())
     {
         await dbContext.Database.MigrateAsync();
     }
     
-    // Veritabanı tohumlamasını çağır
+    // Call database seeding
     await DataSeeder.SeedAdminUserAsync(app);
 }
 catch (Exception ex)
