@@ -74,6 +74,7 @@ builder.Services.AddAuthentication(options =>
     });
 
 builder.Services.AddAuthorization();
+builder.Services.AddAntiforgery();
 
 var app = builder.Build();
 try
