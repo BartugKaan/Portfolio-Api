@@ -109,7 +109,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseMiddlewareExtensions();
 
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
