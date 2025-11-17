@@ -1,0 +1,45 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x' # Adjust according to your project's .NET version
+
+      - name: Build Docker image
+        run: docker build -t bartugweb-api .
+
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/Portfolio-Api
+            git pull origin main
+            
+            # Create/update .env file (taking values from GitHub Secrets)
+            echo "JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}" > .env
+            echo "DEFAULT_ADMIN_USER=${{ secrets.DEFAULT_ADMIN_USER }}" >> .env
+            echo "DEFAULT_ADMIN_PASS=${{ secrets.DEFAULT_ADMIN_PASS }}" >> .env
+            echo "STORAGE_ENDPOINT=${{ secrets.STORAGE_ENDPOINT }}" >> .env
+            echo "STORAGE_ACCESS_KEY_ID=${{ secrets.STORAGE_ACCESS_KEY_ID }}" >> .env
+            echo "STORAGE_SECRET_ACCESS_KEY=${{ secrets.STORAGE_SECRET_ACCESS_KEY }}" >> .env
+            echo "STORAGE_PUBLIC_BASE_URL=${{ secrets.STORAGE_PUBLIC_BASE_URL }}" >> .env
+            
+            # Rebuild and restart the application with Docker Compose
+            docker compose down
+            docker compose up -d --build
