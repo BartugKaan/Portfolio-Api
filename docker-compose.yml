@@ -6,8 +6,8 @@ services:
     build: .
     environment:
       - ConnectionStrings__PostgreSqlDefault=Server=postgres;Port=5432;Database=bartugweb_db;User Id=bartugweb_user;Password=bartugweb_password_1048
-      - ASPNETCORE_ENVIRONMENT=Development 
-      - ASPNETCORE_URLS=http://+:8080
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://0.0.0.0:8080
       - JwtSettings__SecretKey=${JWT_SECRET_KEY}
       - DefaultAdmin__Username=${DEFAULT_ADMIN_USER}
       - DefaultAdmin__Password=${DEFAULT_ADMIN_PASS}
